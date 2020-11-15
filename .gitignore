@@ -2,3 +2,4 @@ src/fraktaal/obj
 src/fraktaal/bin
 .fake
 .ionide
+.vs
