@@ -1006,3 +1006,16 @@ module Kernel =
     let infof fmt = sprintf fmt >> info
     let warnf fmt = sprintf fmt >> warn
     let errf  fmt = sprintf fmt >> err 
+
+//
+// Utility functions
+//
+
+[<AutoOpen>]
+module Utils =
+
+    let withMessage (msg: string) (stt, envs: Envelope list) = stt, envs, msg
+    let withNoEnvelopes stt : _ * Envelope list = stt, []
+    let withAsyncFlow (f: _ -> Async<unit>) (stt, envs: Envelope list, msg: string) = stt, envs, msg, f
+
+    let notSupported op stt = sprintf "%s not supported in current state (%O)" op stt
