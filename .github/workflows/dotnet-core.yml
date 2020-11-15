@@ -19,8 +19,10 @@ jobs:
         dotnet-version: 5.0.100
     - name: Install dependencies
       run: dotnet restore
-    - name: Run Fake
+    - name: Restore tools
       run: dotnet tool restore
+    - name: Build using FAKE
+      run: dotnet fake build
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
