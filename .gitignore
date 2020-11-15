@@ -1,0 +1,4 @@
+.fake/**
+.ionide/**
+src/fraktaal/obj/**
+src/fraktaal/bin/**
