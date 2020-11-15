@@ -1,2 +1,2 @@
-/* dotnet tool restore */
+dotnet tool restore
 dotnet fake %*
