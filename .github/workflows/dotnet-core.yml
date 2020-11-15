@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Run Fake
-      run: dotnet fake build
+      run: dotnet tool restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
