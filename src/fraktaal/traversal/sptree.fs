@@ -18,6 +18,8 @@ module SpanningTree =
     type private IntResult = {
         Pid: ProcessId 
         V:   int }
+        with 
+        override this.ToString() = sprintf "p=%O %d" this.Pid this.V
 
     /// The internal messages
     type private IntMessage = 
@@ -31,7 +33,7 @@ module SpanningTree =
         Results:  IntResult list }
         with
         override this.ToString() =
-            sprintf "cs=%A es=%A rs=%A" this.Children this.Expected this.Results
+            sprintf "cs=%O es=%O rs=%O" this.Children this.Expected this.Results
 
     [<RequireQualifiedAccess>]
     module private SttRunning = 
@@ -55,7 +57,7 @@ module SpanningTree =
         Results:  IntResult list }
         with
         override this.ToString() =
-            sprintf "cs={this.Children} rs={this.Results}"
+            sprintf "cs=%O rs=%O" this.Children this.Results
 
     type private State =
         | SttUninitialized

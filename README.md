@@ -16,4 +16,4 @@ A collection of algorithms for different traversal scenarios. Each algorithm is 
 Implements the [learning](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/learner.fs) algorithm in which all actors learn about the other nodes in the system and their links.
 
 ### 2.2. Spanning Tree
-Implements the [spanning tree](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/sptree.fs) algorthm in which we build a spanning tree with the root in the starting process and the children being the rest of the processes.
+Implements the [spanning tree](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/sptree.fs) algorithm in which we build a spanning tree with the root in the starting process and the children being the rest of the processes.
