@@ -293,12 +293,11 @@ module Link =
 
     let unilink = unilinkWithWeight NoWeight
 
-module LinkOps =
-    let (=>>) x y = Link.unilink x y
-    let (<=>) x y = Link.bilink  x y
-    let (<<=) x y = Link.unilink y x
-
-    let (..) lnk w = Link.withWeight (Weight w) lnk
+    module Ops =
+        let (=>>) x y = unilink x y
+        let (<=>) x y = bilink  x y
+        let (<<=) x y = unilink y x
+        let (..>)  l w = withWeight (Weight w) l
 
 type Neighbor =
     | Sourcer           of ProcessId * Weight
@@ -1019,3 +1018,5 @@ module Utils =
     let withAsyncFlow (f: _ -> Async<unit>) (stt, envs: Envelope list, msg: string) = stt, envs, msg, f
 
     let notSupported op stt = sprintf "%s not supported in current state (%O)" op stt
+
+    let aempty = fun _ -> async.Return ()
