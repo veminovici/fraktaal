@@ -21,5 +21,8 @@ Implements the [spanning tree](https://github.com/veminovici/fraktaal/blob/main/
 ### 2.3. Breadth First
 Implements the [breadth first](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/bf.fs) algorithm in which we traverse the graph of processes using the breadth first policy.
 
-### 2.3. Depth First
+### 2.4. Depth First
 Implements the [depth first](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/bf.fs) algorithm in which we traverse the graph of processes using the depth first policy.
+
+### 2.5. Ring
+Implements the [ring generation](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/ring.fs) algorithm in which we traverse the graph of processes and builds a ring where a token can be send from one process to another which process has a chance to consume the token.

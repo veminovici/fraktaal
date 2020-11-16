@@ -5,6 +5,7 @@
 #load "../../src/fraktaal/traversal/sptree.fs"
 #load "../../src/fraktaal/traversal/bf.fs"
 #load "../../src/fraktaal/traversal/df.fs"
+#load "../../src/fraktaal/traversal/ring.fs"
 
 open Simplee.DSystems
 open Simplee.DSystems.Kernel
@@ -172,6 +173,51 @@ let testDepthFirst () =
 
         return () }
 
+let testRing () =
+    let pid1 = ProcessId.ofStr "p1"
+    let pid2 = ProcessId.ofStr "p2"
+    let pid3 = ProcessId.ofStr "p3"
+    let pid4 = ProcessId.ofStr "p4"
+    let pid5 = ProcessId.ofStr "p5"
+
+    kernel {
+        do! dbg "<<< Test Ring >>>"
+        
+        // create the processes
+        let! procs = 
+            [ pid1; pid2; pid3; pid4; pid5 ] 
+            |> Ring.spawns
+            |> KFlow.map Map.ofList
+
+        // create the connections
+        do! [
+            pid1 <=> pid3
+            pid1 <=> pid2
+            pid2 <=> pid5
+            pid2 <=> pid4
+            pid2 <=> pid3
+            pid3 <=> pid4
+            ] |> addLinks
+
+        do! sleep 100
+
+        // Start the learning
+        let! _ = 
+            procs 
+            |> Map.find pid1
+            |> Ring.start (SessionId.ofStr "s0")
+
+        do! sleep 100
+
+        let! _ =
+            procs
+            |> Map.find pid1
+            |> Ring.token (SessionId.ofStr "s1") 10
+
+        do! sleep 100
+
+        return () }
+
 let runTests ts = 
 
     let flow = 
@@ -195,8 +241,8 @@ let runTests ts =
 //testLearning
 //testSpanningTree
 //testBreadthFirst
-testDepthFirst
+//testDepthFirst
 //testDepthFirst1
-//testRing
+testRing
 ]
 |> runTests

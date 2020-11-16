@@ -9,6 +9,7 @@
     <Compile Include="traversal/sptree.fs"  />
     <Compile Include="traversal/bf.fs"  />
     <Compile Include="traversal/df.fs"  />
+    <Compile Include="traversal/ring.fs"  />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
