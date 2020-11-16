@@ -2,6 +2,7 @@
 
 #load "../../src/fraktaal/core/kernel.fs"
 #load "../../src/fraktaal/traversal/learner.fs"
+#load "../../src/fraktaal/traversal/sptree.fs"
 
 open Simplee.DSystems
 open Simplee.DSystems.Kernel
@@ -47,6 +48,55 @@ let testLearning () =
 
         return () }
 
+let testSpanningTree () =
+    let pidA = ProcessId.ofStr "a"
+    let pidB = ProcessId.ofStr "b"
+    let pidC = ProcessId.ofStr "c"
+    let pidF = ProcessId.ofStr "f"
+    let pidG = ProcessId.ofStr "g"
+    let pidI = ProcessId.ofStr "i"
+    let pidJ = ProcessId.ofStr "j"
+    let pidK = ProcessId.ofStr "k"
+
+    kernel {
+        do! dbg "<<< Test Spanning Tree >>>"
+        
+        // create the processes
+        let! procs = 
+            [ pidA; pidB; pidC; pidF; pidG; pidI; pidJ; pidK ] 
+            |> SpanningTree.spawns
+            |> KFlow.map Map.ofList
+
+        // create the connections
+        do! [
+            pidA <=> pidB
+            pidA <=> pidI
+            pidA <=> pidJ
+            pidB <=> pidC
+            pidB <=> pidJ
+            pidC <=> pidF
+            pidF <=> pidJ
+            pidF <=> pidI
+            pidF <=> pidK
+            pidF <=> pidG
+            pidG <=> pidK
+            pidI <=> pidJ
+            pidI <=> pidK
+            ] |> addLinks
+
+        do! sleep 100
+
+        // Start the learning
+        let! _ = 
+            procs 
+            |> Map.find pidA
+            |> SpanningTree.start (SessionId.ofStr "s0") 10
+
+        do! sleep 1000
+
+        return () }
+
+
 let runTests ts = 
 
     let flow = 
@@ -67,8 +117,8 @@ let runTests ts =
 [
 //testKernel
 //testNeighbors
-testLearning
-//testSpanningTree
+//testLearning
+testSpanningTree
 //testBreadthFirst
 //testDepthFirst
 //testDepthFirst1
