@@ -1,6 +1,8 @@
 # Simplee.Fraktaal
 A project for distributed algorithms.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/sn12cou91meiu35e/branch/main?svg=true)](https://ci.appveyor.com/project/veminovici/fraktaal/branch/main)
+
 <br />
 
 ## 1. Kernel
