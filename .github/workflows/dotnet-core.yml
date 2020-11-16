@@ -19,7 +19,7 @@ jobs:
         # dotnet-version: 5.0.100
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore --verbosity d
     - name: Build using FAKE
       run: dotnet fake build
     - name: Build
