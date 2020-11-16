@@ -3,6 +3,7 @@
 #load "../../src/fraktaal/core/kernel.fs"
 #load "../../src/fraktaal/traversal/learner.fs"
 #load "../../src/fraktaal/traversal/sptree.fs"
+#load "../../src/fraktaal/traversal/bf.fs"
 
 open Simplee.DSystems
 open Simplee.DSystems.Kernel
@@ -96,6 +97,42 @@ let testSpanningTree () =
 
         return () }
 
+let testBreadthFirst () =
+    let pidA = ProcessId.ofStr "a"
+    let pidB = ProcessId.ofStr "b"
+    let pidC = ProcessId.ofStr "c"
+    let pidD = ProcessId.ofStr "d"
+
+    kernel {
+        do! dbg "<<< Test Breadth First >>>"
+        
+        // create the processes
+        let! procs = 
+            [ pidA; pidB; pidC; pidD; ] 
+            |> BreadthFirst.spawns
+            |> KFlow.map Map.ofList
+
+        // create the connections
+        do! [
+            pidA <=> pidB
+            pidB <=> pidC
+            pidC <=> pidD
+            pidD <=> pidA
+            pidA <=> pidC
+            pidB <=> pidD
+            ] |> addLinks
+
+        do! sleep 100
+
+        // Start the learning
+        let! _ = 
+            procs 
+            |> Map.find pidA
+            |> BreadthFirst.start (SessionId.ofStr "s0")
+
+        do! sleep 100
+
+        return () }
 
 let runTests ts = 
 
@@ -118,8 +155,8 @@ let runTests ts =
 //testKernel
 //testNeighbors
 //testLearning
-testSpanningTree
-//testBreadthFirst
+//testSpanningTree
+testBreadthFirst
 //testDepthFirst
 //testDepthFirst1
 //testRing

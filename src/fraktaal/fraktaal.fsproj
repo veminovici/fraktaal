@@ -7,6 +7,7 @@
     <Compile Include="core/kernel.fs" />
     <Compile Include="traversal/learner.fs" />
     <Compile Include="traversal/sptree.fs"  />
+    <Compile Include="traversal/bf.fs"  />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
