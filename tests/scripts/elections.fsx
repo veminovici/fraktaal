@@ -15,13 +15,18 @@ let testLeaderUR () =
     let pid4 = ProcessId.ofStr "p4"
     let pid5 = ProcessId.ofStr "p5"
 
+    let comp (xid: ProcessId) (yid: ProcessId) =
+        if (xid < yid)   then ALessThanB
+        elif (xid > yid) then AGreaterThanB
+        else                  AEqualToB
+
     kernel {
         do! dbg "<<< Test Leader Unidirectional Ring >>>"
         
         // create the processes
         let! procs = 
             [ pid1; pid2; pid3; pid4; pid5 ] 
-            |> LeaderUR.spawns
+            |> LeaderUR.spawns comp
             |> KFlow.map Map.ofList
 
         // create the connections

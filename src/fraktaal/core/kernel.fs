@@ -1,5 +1,15 @@
 namespace Simplee.DSystems
 
+[<AutoOpen>]
+module Utils =
+
+    type Comparison =
+        | ALessThanB
+        | AEqualToB
+        | AGreaterThanB
+
+    type Compare<'T> = 'T -> 'T -> Comparison
+
 /// Extenstions to Lists.
 [<RequireQualifiedAccessAttribute>]
 module List =
@@ -1031,7 +1041,7 @@ module Kernel =
 //
 
 [<AutoOpen>]
-module Utils =
+module StateUtils =
 
     let withMessage (msg: string) (stt, envs: Envelope list) = stt, envs, msg
     let withNoEnvelopes stt : _ * Envelope list = stt, []

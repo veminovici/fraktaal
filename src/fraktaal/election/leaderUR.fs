@@ -76,7 +76,7 @@ module LeaderUR =
 
             stt, envs
 
-    let private rcv : ReceiveHandle = fun pstt pctx env -> 
+    let private rcv (comp: Compare<ProcessId>) : ReceiveHandle = fun pstt pctx env -> 
         let pid              = pctx.Pid
         let stt : State      = ProcessState.toItem pstt
         let msg : IntMessage = Envelope.msg pctx.Serializer env
@@ -93,17 +93,17 @@ module LeaderUR =
 
         let stt, envs, msg, aflow = 
             match msg, stt with
-            | Election xid, (SttElection as stt) when xid > pid ->
+            | Election xid, (SttElection as stt) when comp xid pid = AGreaterThanB ->
                 stt
                 |> withElectionEnvelope pctx sid xid
                 |> withMessage          "election/fwd"
                 |> withAsyncFlow        aempty
-            | Election xid, (SttElection as stt) when xid < pid ->
+            | Election xid, (SttElection as stt) when comp xid pid = ALessThanB ->
                 stt
                 |> withElectionEnvelope pctx sid (ProcessCtx.pid pctx)
                 |> withMessage          "election/me"
                 |> withAsyncFlow        aempty
-            | Election xid, stt when xid = pid ->
+            | Election xid, stt when comp xid pid = AEqualToB ->
                 stt
                 |> moveToElected
                 |> withElectedEnvelope pctx sid pid
@@ -154,18 +154,18 @@ module LeaderUR =
         return ProcessState.ofItem stt, envs, ApiResult.nil }
 
     /// process configuration.
-    let private definition =
+    let private definition comp =
         ProcessCfg.empty
         >> ProcessCfg.withApi  api
-        >> ProcessCfg.withRcv  rcv
+        >> ProcessCfg.withRcv  (rcv comp)
         >> ProcessCfg.withZero State.empty
 
     //
     // Public api
     //
 
-    let spawns ps : KFlow<_> =
-        let pcfgs = ps |> List.map definition
+    let spawns comp ps : KFlow<_> =
+        let pcfgs = ps |> List.map (definition comp)
         pcfgs 
         |> Kernel.spawns
         |> KFlow.map (List.map (fun (pid, p) -> (pid, LeaderURProc p)))
