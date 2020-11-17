@@ -601,6 +601,26 @@ module ProcessCtx =
         pctx.Neighbors
         |> List.where Neighbor.canReceiveFrom
 
+    let procsCanReceiveFrom =
+        canReceiveFrom 
+        >> List.map Neighbor.pid
+
+    let upstream pctx = 
+        pctx
+        |> procsCanReceiveFrom
+        |> function
+        | []  -> failwithf "Process does not have an upstream neighbor (%O)" pctx.Pid
+        | [x] -> x
+        | _   -> failwithf "Process has too many upstream neighbors (%O)" pctx.Pid
+
+    let downstream pctx = 
+        pctx
+        |> procsCanSentTo
+        |> function
+        | []  -> failwithf "Process does not have a downstream neighbor (%O)" pctx.Pid
+        | [x] -> x
+        | _   -> failwithf "Process has too many downstream neighbors (%O)" pctx.Pid
+
     let pid (p: ProcessCtx) = p.Pid
     let fid                 = pid >> FromId.ofProcessId
     let tid                 = pid >> ToId.ofProcessId

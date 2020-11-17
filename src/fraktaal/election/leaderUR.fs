@@ -20,17 +20,61 @@ module LeaderUR =
         | Elected  of ProcessId
 
     type private State =
-        | SttUninitialized
-        | SttRunning
+        | SttElection
+        | SttLead
+        | SttNoLead   of ProcessId
         with
         override this.ToString() =
             match this with
-            | SttUninitialized -> "uninitialized"
-            | SttRunning       -> "running"
+            | SttElection   -> "election"
+            | SttLead       -> "lead"
+            | SttNoLead xid -> sprintf "done ldr=%O" xid
 
     [<RequireQualifiedAccess>]
     module private State =
-        let empty = SttUninitialized
+        let empty = SttElection
+
+    [<AutoOpen>]
+    module private StateTransitions =
+
+
+        let moveToElected (_: State) =
+            SttLead
+
+        let moveToDone xid (_: State) =
+            SttNoLead xid
+
+    [<AutoOpen>]
+    module private Envelope =
+
+        let private mkEnvelope pctx sid dest = 
+            ()
+            |> Envelope.ofRndEid
+            |> Envelope.withSid sid
+            |> Envelope.withFid (ProcessCtx.fid pctx)
+            |> Envelope.withTid dest
+
+        let withElectionEnvelope pctx sid xid stt =
+            let envs = 
+                pctx
+                |> ProcessCtx.downstream
+                |> ToId.ofProcessId
+                |> mkEnvelope pctx sid
+                |> Envelope.withItem pctx.Serializer (Election xid)
+                |> List.ofItem
+
+            stt, envs
+
+        let withElectedEnvelope pctx sid xid stt =
+            let envs = 
+                pctx
+                |> ProcessCtx.downstream
+                |> ToId.ofProcessId
+                |> mkEnvelope pctx sid
+                |> Envelope.withItem pctx.Serializer (Elected xid)
+                |> List.ofItem
+
+            stt, envs
 
     let private rcv : ReceiveHandle = fun pstt pctx env -> 
         let pid              = pctx.Pid
@@ -47,7 +91,35 @@ module LeaderUR =
         async {
         do! doRcv
 
-        let stt, envs, msg, aflow = stt, [], "", aempty
+        let stt, envs, msg, aflow = 
+            match msg, stt with
+            | Election xid, (SttElection as stt) when xid > pid ->
+                stt
+                |> withElectionEnvelope pctx sid xid
+                |> withMessage          "election/fwd"
+                |> withAsyncFlow        aempty
+            | Election xid, (SttElection as stt) when xid < pid ->
+                stt
+                |> withElectionEnvelope pctx sid (ProcessCtx.pid pctx)
+                |> withMessage          "election/me"
+                |> withAsyncFlow        aempty
+            | Election xid, stt when xid = pid ->
+                stt
+                |> moveToElected
+                |> withElectedEnvelope pctx sid pid
+                |> withMessage         "election/elected"
+                |> withAsyncFlow       (doDbg "<<< ELECTED >>> ")
+            | Elected xid, (SttElection as stt) ->
+                stt
+                |> moveToDone xid
+                |> withElectedEnvelope pctx sid xid
+                |> withMessage         "elected/fwd"
+                |> withAsyncFlow       (doDbg "<<< DONE >>>")
+            | _, stt ->
+                stt
+                |> withNoEnvelopes
+                |> withMessage     "test"
+                |> withAsyncFlow   aempty
 
         do! aflow stt
         do! doSnd msg envs stt
@@ -67,7 +139,15 @@ module LeaderUR =
         async {
         do! doApi
 
-        let stt, envs, msg, aflow = stt, [], "", aempty
+        let stt, envs, msg, aflow = 
+            match api, stt with
+            | ApiStart, (SttElection as stt) -> 
+                stt
+                |> withElectionEnvelope pctx sid pid
+                |> withMessage          "start/election"
+                |> withAsyncFlow        aempty
+            | ApiStart, stt ->
+                stt, [], "api/none", aempty
 
         do! aflow stt
         do! doSnd msg envs stt
@@ -92,5 +172,5 @@ module LeaderUR =
 
     /// Initiates a learning session, with a given
     /// session identifier and starting from a given process.
-    let start sid dt (LeaderURProc p) = 
+    let start sid (LeaderURProc p) = 
         Kernel.apiCallWithArgs sid ApiStart p

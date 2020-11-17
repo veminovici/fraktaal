@@ -9,7 +9,6 @@ open Simplee.DSystems.Link.Ops
 open Simplee.DSystems.Elections
 
 let testLeaderUR () =
-    let pid0 = ProcessId.ofStr "p0"
     let pid1 = ProcessId.ofStr "p1"
     let pid2 = ProcessId.ofStr "p2"
     let pid3 = ProcessId.ofStr "p3"
@@ -17,14 +16,41 @@ let testLeaderUR () =
     let pid5 = ProcessId.ofStr "p5"
 
     kernel {
-        do! dbg "<<< Test Leader Unidirectional Ring  >>>"
+        do! dbg "<<< Test Leader Unidirectional Ring >>>"
         
-        do! sleep 1000
+        // create the processes
+        let! procs = 
+            [ pid1; pid2; pid3; pid4; pid5 ] 
+            |> LeaderUR.spawns
+            |> KFlow.map Map.ofList
+
+        // create the connections
+        do! [
+            pid1 =>> pid2
+            pid2 =>> pid3
+            pid3 =>> pid4
+            pid4 =>> pid5
+            pid5 =>> pid1
+            ] |> addLinks
+
+        do! sleep 100
+
+        // Start the learning
+        let! _ = 
+            procs 
+            |> Map.find pid1
+            |> LeaderUR.start (SessionId.ofStr "s0")
+
+        do! sleep 100
 
         return () }
-
 
 [
 testLeaderUR
 ]
-|> runTests
+|> runTests LogEntry.isPDbgLog
+
+//(fun _ -> true)
+//LogEntry.isProcLog
+//LogEntry.isPDbgLog
+
