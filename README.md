@@ -2,7 +2,6 @@
 A project for distributed algorithms.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sn12cou91meiu35e/branch/main?svg=true)](https://ci.appveyor.com/project/veminovici/fraktaal/branch/main) [![Actions Status](https://github.com/veminovici/fraktaal/workflows/.NET%20Core/badge.svg)](https://github.com/veminovici/csp-generator/actions)
-
 <br />
 
 ## 1. Kernel
@@ -28,3 +27,10 @@ Implements the [depth first](https://github.com/veminovici/fraktaal/blob/main/sr
 
 ### 2.5. Ring
 Implements the [ring generation](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/traversal/ring.fs) algorithm in which we traverse the graph of processes and builds a ring where a token can be send from one process to another which process has a chance to consume the token.
+
+<br />
+
+## 3. Election Algorithms
+
+### 3.1 Leader in Unidirectional Ring
+Implements the [leader election](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/election/leaderUR.fs) algorithm in which we select a leader form a graph of processes.

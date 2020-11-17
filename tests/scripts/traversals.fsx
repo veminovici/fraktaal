@@ -1,12 +1,11 @@
-#r "nuget: FsPickler"
-
-#load "../../src/fraktaal/core/kernel.fs"
+#load "utils.fsx"
 #load "../../src/fraktaal/traversal/learner.fs"
 #load "../../src/fraktaal/traversal/sptree.fs"
 #load "../../src/fraktaal/traversal/bf.fs"
 #load "../../src/fraktaal/traversal/df.fs"
 #load "../../src/fraktaal/traversal/ring.fs"
 
+open Utils
 open Simplee.DSystems
 open Simplee.DSystems.Kernel
 open Simplee.DSystems.KFlowBuilder
@@ -47,7 +46,7 @@ let testLearning () =
             |> Map.find pid0
             |> Learner.start (SessionId.ofStr "s0")
 
-        do! sleep 1000
+        do! sleep 100
 
         return () }
 
@@ -95,7 +94,7 @@ let testSpanningTree () =
             |> Map.find pidA
             |> SpanningTree.start (SessionId.ofStr "s0") 10
 
-        do! sleep 1000
+        do! sleep 100
 
         return () }
 
@@ -218,23 +217,6 @@ let testRing () =
 
         return () }
 
-let runTests ts = 
-
-    let flow = 
-        ts
-        |> List.map (fun t -> t ())
-        |> KFlow.sequenceA
-
-    kernel {
-        let! _ = flow
-        return! logs
-    }
-    |> runSync
-    //|> List.where LogEntry.isProcLog
-    |> List.where LogEntry.isPDbgLog
-    |> List.toStringWithTtl "Combined Logs:"
-    |> printfn "%s"
-
 [
 //testKernel
 //testNeighbors
@@ -244,5 +226,4 @@ let runTests ts =
 //testDepthFirst
 //testDepthFirst1
 testRing
-]
-|> runTests
+] |> runTests

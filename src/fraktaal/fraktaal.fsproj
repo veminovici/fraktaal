@@ -6,10 +6,11 @@
   <ItemGroup>
     <Compile Include="core/kernel.fs" />
     <Compile Include="traversal/learner.fs" />
-    <Compile Include="traversal/sptree.fs"  />
-    <Compile Include="traversal/bf.fs"  />
-    <Compile Include="traversal/df.fs"  />
-    <Compile Include="traversal/ring.fs"  />
+    <Compile Include="traversal/sptree.fs" />
+    <Compile Include="traversal/bf.fs" />
+    <Compile Include="traversal/df.fs" />
+    <Compile Include="traversal/ring.fs" />
+    <Compile Include="election/leaderUR.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
