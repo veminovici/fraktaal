@@ -27,4 +27,4 @@ jobs:
     # - name: Build
     #  run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test ./tests/xpect/xpect.fsproj --no-restore --verbosity normal
+      run: dotnet test ./tests/xpect/xpect.fsproj --verbosity normal
