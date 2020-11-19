@@ -1,5 +1,8 @@
 src/fraktaal/obj
 src/fraktaal/bin
+tests/xpect/bin
+tests/xpect/obj
 .fake
+.paket
 .ionide
 .vs
