@@ -251,10 +251,15 @@ type Weight =
         match this with
         | NoWeight -> "w-no"
         | Weight f -> sprintf "w-%.2f" f
+type Direction = 
+    | NoDirection
+    | ToLeftDirection
+    | ToRightDirection
 type LinkData = private {
     Fid: ProcessId
     Tid: ProcessId
-    W:   Weight }
+    W:   Weight
+    D:   Direction }
 type Link =
     | OneWay  of LinkData
     | TwoWays of LinkData
@@ -264,7 +269,8 @@ module LinkData =
     let empty = { 
         Fid = ProcessId.empty
         Tid = ProcessId.empty
-        W = NoWeight }
+        W = NoWeight
+        D = NoDirection }
 
 [<RequireQualifiedAccess>]
 module Link =
@@ -285,7 +291,11 @@ module Link =
 
     let withWeight w = function
         | TwoWays ld -> TwoWays { ld with W = w }
-        | OneWay  ld -> OneWay   { ld with W = w }
+        | OneWay  ld -> OneWay  { ld with W = w }
+
+    let withDirection d = function
+        | TwoWays ld -> TwoWays { ld with D = d }
+        | OneWay  ld -> OneWay  { ld with D = d }
 
     let bilinkWithWeight w fid tid = 
         emptyBi
@@ -305,21 +315,24 @@ module Link =
 
     module Ops =
         let (=>>) x y = unilink x y
+        let (.>>) x y = unilink x y |> withDirection ToRightDirection
         let (<=>) x y = bilink  x y
         let (<<=) x y = unilink y x
-        let (..>)  l w = withWeight (Weight w) l
+        let (<<.) x y = unilink y x |> withDirection ToLeftDirection
+        let (++)  l w = withWeight (Weight w) l
+        let (!!)  l d = withDirection d l
 
 type Neighbor =
-    | Sourcer           of ProcessId * Weight
-    | Receiver          of ProcessId * Weight
-    | SourcerOrReceiver of ProcessId * Weight
+    | Sourcer           of ProcessId * Weight * Direction
+    | Receiver          of ProcessId * Weight * Direction
+    | SourcerOrReceiver of ProcessId * Weight * Direction
 
 [<RequireQualifiedAccess>]
 module Neighbor =
     let toString pid = function
-        | Sourcer           (f, w) -> sprintf "%O <<= %O (%O)" pid f w
-        | Receiver          (t, w) -> sprintf "%O =>> %O (%O)" pid t w
-        | SourcerOrReceiver (e, w) -> sprintf "%O <=> %O (%O)" pid e w
+        | Sourcer           (f, w, d) -> sprintf "%O <<= %O (%O, %O)" pid f w d
+        | Receiver          (t, w, d) -> sprintf "%O =>> %O (%O, %O)" pid t w d
+        | SourcerOrReceiver (e, w, d) -> sprintf "%O <=> %O (%O, %O)" pid e w d
 
     let toStringWithTtlF s t pid ns =
         List.toStringWithTtlF s (toString pid) t ns
@@ -327,33 +340,33 @@ module Neighbor =
     let toStringWithTtl t pid ns = toStringWithTtlF "\n" t pid ns
 
     let private startOfLink = function
-        | OneWay  l -> FromId.ofProcessId l.Fid, Receiver (l.Tid, l.W)
-        | TwoWays l -> FromId.ofProcessId l.Fid, SourcerOrReceiver (l.Tid, l.W) 
+        | OneWay  l -> FromId.ofProcessId l.Fid, Receiver (l.Tid, l.W, l.D)
+        | TwoWays l -> FromId.ofProcessId l.Fid, SourcerOrReceiver (l.Tid, l.W, l.D) 
 
     let private endOfLink = function
-        | OneWay  l -> ToId.ofProcessId l.Tid, Sourcer (l.Fid, l.W)
-        | TwoWays l -> ToId.ofProcessId l.Tid, SourcerOrReceiver (l.Fid, l.W)
+        | OneWay  l -> ToId.ofProcessId l.Tid, Sourcer (l.Fid, l.W, l.D)
+        | TwoWays l -> ToId.ofProcessId l.Tid, SourcerOrReceiver (l.Fid, l.W, l.D)
 
     let endsOfLink l =
         startOfLink l, endOfLink l
 
     let pid = function
-        | Sourcer  (pid, _)          -> pid
-        | Receiver (pid, _)          -> pid
-        | SourcerOrReceiver (pid, _) -> pid
+        | Sourcer  (pid, _, _)          -> pid
+        | Receiver (pid, _, _)          -> pid
+        | SourcerOrReceiver (pid, _, _) -> pid
 
     let tid = pid >> ToId.ofProcessId
     let fid = pid >> FromId.ofProcessId
 
     let (|CanSendTo|_|) = function
-        | Sourcer           _      -> None
-        | Receiver          (p, w)
-        | SourcerOrReceiver (p, w) -> Some (p, w)
+        | Sourcer           _         -> None
+        | Receiver          (p, w, d)
+        | SourcerOrReceiver (p, w, d) -> Some (p, w, d)
 
     let (|CanReceiveFrom|_|) = function
         | Receiver          _      -> None
-        | Sourcer           (p, w)
-        | SourcerOrReceiver (p, w) -> Some (p, w)
+        | Sourcer           (p, w, d)
+        | SourcerOrReceiver (p, w, d) -> Some (p, w, d)
 
     let canSendTo      = function CanSendTo _      -> true | _ -> false
     let canReceiveFrom = function CanReceiveFrom _ -> true | _ -> false
