@@ -9,11 +9,27 @@ open Simplee.DSystems.Link.Ops
 
 type TstKernelPub = TstKernelPub of IProcessPub
 
+type TstKernelStt = {
+    Pid: ProcessId
+    Ns:  Neighbor list }
+
 [<RequireQualifiedAccess>]
 module TstKernel =
 
+    let private empty = {
+        Pid = ProcessId.empty
+        Ns = [] }
+
+    let withPid pid (stt: TstKernelStt) = { stt with Pid = pid }
+    let withNeighbors ns (stt: TstKernelStt) = { stt with Ns = ns @ stt.Ns }
+
     let private cfg : ConfigHandle = fun pstt pctx ns -> async {
-        return pstt, [] }
+        let pid                = pctx.Pid
+        let stt : TstKernelStt = ProcessState.toItem pstt
+
+        let stt = stt |> withNeighbors ns |> withPid pid
+
+        return ProcessState.ofItem stt, [] }
 
     let private rcv : ReceiveHandle = fun pstt pctx env -> async {
         return pstt, [] }
@@ -21,9 +37,9 @@ module TstKernel =
     let private api : ApiCallHandle = fun pstt pctx sid args -> async {
         let pid              = pctx.Pid
         //let api : ApiMessage = ApiArguments.toItem args
-        //let stt : State      = ProcessState.toItem pstt
+        let stt : TstKernelStt = ProcessState.toItem pstt
 
-        return pstt, [], ApiResult.nil }
+        return ProcessState.ofItem stt, [], ApiResult.nil }
 
     /// process configuration.
     let private definition =
@@ -31,7 +47,7 @@ module TstKernel =
         >> ProcessCfg.withApi  api
         >> ProcessCfg.withRcv  rcv
         >> ProcessCfg.withCfg  cfg
-        >> ProcessCfg.withZero None
+        >> ProcessCfg.withZero empty
 
     let spawns ps : KFlow<_> =
         let pcfgs = ps |> List.map definition
@@ -40,43 +56,57 @@ module TstKernel =
         |> KFlow.map (List.map (fun (pid, p) -> (pid, TstKernelPub p)))
 
     let pid (TstKernelPub proc) = proc.Id
-    let stt (TstKernelPub proc) = proc.ProcState |> Async.map ProcessState.toItem
+    let stt (TstKernelPub proc) : Async<TstKernelStt> = proc.ProcState |> Async.map ProcessState.toItem
 
 module Kernel = 
+    let pid0 = ProcessId.ofStr "p0"
+    let pid1 = ProcessId.ofStr "p1"
+    let pid2 = ProcessId.ofStr "p2"
+
     [<Tests>]
     let tests = 
         testList "graph" [
-            testCase "Process Id is correct" <| fun _ ->
-                let pid0 = ProcessId.ofStr "p0"
-                let pid1 = ProcessId.ofStr "p1"
-                let pid2 = ProcessId.ofStr "p2"
+            testCase "Process is correct" <| fun _ ->
 
-                let flow = 
-                    kernel {
-                        // create the processes
-                        let! procs = 
-                            [ pid0; pid1; pid2 ] 
-                            |> TstKernel.spawns
-                            |> KFlow.map Map.ofList
+                let getState (pid, proc) = 
+                    proc
+                    |> TstKernel.stt
+                    |> Async.map (fun stt -> pid, stt)
 
-                        // create the connections
-                        do! [ pid0 <=> pid1; pid0 <=> pid2] |> addLinks
+                let checkP0 res = 
+                    let p0s = res |> Array.where (fun (pid, proc) -> pid = pid0) |> Array.map snd
+                    Expect.isTrue (Array.length p0s = 1) "There is only one pid0"
 
-                        do! sleep 100
+                    let proc0 = Array.head p0s
+                    Expect.isTrue (proc0.Pid = pid0) "The identifier for pid0 must be right"
 
-                        // get the state
-                        let p0 = procs |> Map.find pid0
+                    let ns = proc0.Ns
+                    Expect.isTrue (List.length ns = 2) "The pid0 has two neighbors"
 
-                        let res = async {
-                            let! pid = TstKernel.pid p0
-                            return pid = pid0 } |> Async.RunSynchronously
-                        
-                        return res }
+                    res
 
-                let res = flow |> runSync
+                kernel {
+                    // create the processes
+                    let! procs = 
+                        [ pid0; pid1; pid2 ] 
+                        |> TstKernel.spawns
+                        |> KFlow.map Map.ofList
 
-                //let subject = true
-                Expect.isTrue res "The process id is correct"
+                    // create the connections
+                    do! [ pid0 <=> pid1; pid0 <=> pid2] |> addLinks
+
+                    do! sleep 100
+
+                    // get states of the processes
+                    return
+                        procs 
+                        |> Map.toList 
+                        |> List.map getState
+                        |> Async.Parallel
+                        |> Async.RunSynchronously }
+                |> runSync
+                |> checkP0
+                |> ignore
 
       (*testCase "when true is not (should fail)" <| fun _ ->
         let subject = false
