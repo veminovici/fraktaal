@@ -39,11 +39,14 @@ module TstKernel =
         |> Kernel.spawns
         |> KFlow.map (List.map (fun (pid, p) -> (pid, TstKernelPub p)))
 
+    let pid (TstKernelPub proc) = proc.Id
+    let stt (TstKernelPub proc) = proc.ProcState |> Async.map ProcessState.toItem
+
 module Kernel = 
     [<Tests>]
     let tests = 
         testList "graph" [
-            testCase "universe exists" <| fun _ ->
+            testCase "Process Id is correct" <| fun _ ->
                 let pid0 = ProcessId.ofStr "p0"
                 let pid1 = ProcessId.ofStr "p1"
                 let pid2 = ProcessId.ofStr "p2"
@@ -61,12 +64,19 @@ module Kernel =
 
                         do! sleep 100
 
-                        return () }
+                        // get the state
+                        let p0 = procs |> Map.find pid0
 
-                let _ = flow |> runSync
+                        let res = async {
+                            let! pid = TstKernel.pid p0
+                            return pid = pid0 } |> Async.RunSynchronously
+                        
+                        return res }
 
-                let subject = true
-                Expect.isTrue subject "I compute, therefore I am."
+                let res = flow |> runSync
+
+                //let subject = true
+                Expect.isTrue res "The process id is correct"
 
       (*testCase "when true is not (should fail)" <| fun _ ->
         let subject = false
