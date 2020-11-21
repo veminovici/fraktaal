@@ -22,6 +22,8 @@ Target.initEnvironment ()
 Target.create "Clean" (fun _ ->
     !! "src/**/bin"
     ++ "src/**/obj"
+    ++ "tests/**/bin"
+    ++ "tests/**/obj"
     |> Shell.cleanDirs 
 )
 
