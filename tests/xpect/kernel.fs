@@ -1,10 +1,12 @@
-module Tests
+module Testlee.DSystems.Kernel
 
 open Expecto
 
+open Simplee.DSystems
+
 [<Tests>]
 let tests = 
-    testList "samples" [
+    testList "graph" [
         testCase "universe exists (╭ರᴥ•́)" <| fun _ ->
             let subject = true
             Expect.isTrue subject "I compute, therefore I am."

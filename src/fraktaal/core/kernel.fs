@@ -339,13 +339,18 @@ module Neighbor =
 
     let toStringWithTtl t pid ns = toStringWithTtlF "\n" t pid ns
 
+    let private opositeDir = function
+        | ToLeftDirection  -> ToRightDirection
+        | ToRightDirection -> ToLeftDirection
+        | NoDirection      -> NoDirection
+
     let private startOfLink = function
-        | OneWay  l -> FromId.ofProcessId l.Fid, Receiver (l.Tid, l.W, l.D)
+        | OneWay  l -> FromId.ofProcessId l.Fid, Receiver          (l.Tid, l.W, l.D)
         | TwoWays l -> FromId.ofProcessId l.Fid, SourcerOrReceiver (l.Tid, l.W, l.D) 
 
     let private endOfLink = function
-        | OneWay  l -> ToId.ofProcessId l.Tid, Sourcer (l.Fid, l.W, l.D)
-        | TwoWays l -> ToId.ofProcessId l.Tid, SourcerOrReceiver (l.Fid, l.W, l.D)
+        | OneWay  l -> ToId.ofProcessId l.Tid, Sourcer           (l.Fid, l.W, opositeDir l.D)
+        | TwoWays l -> ToId.ofProcessId l.Tid, SourcerOrReceiver (l.Fid, l.W, opositeDir l.D)
 
     let endsOfLink l =
         startOfLink l, endOfLink l

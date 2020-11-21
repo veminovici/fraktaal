@@ -1,4 +1,5 @@
-﻿module xpect
+﻿module Testlee.Fraktaal
+
 open Expecto
 
 [<EntryPoint>]

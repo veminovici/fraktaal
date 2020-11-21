@@ -7,8 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Sample.fs" />
-    <Compile Include="Main.fs" />
+    <ProjectReference Include="../../src/fraktaal/fraktaal.fsproj">
+      <Name>fraktaal.fsproj</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="kernel.fs" />
+    <Compile Include="traversals.fs" />
+    <Compile Include="main.fs" />
   </ItemGroup>
 
   <ItemGroup>
