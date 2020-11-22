@@ -46,3 +46,9 @@ Implements the [ring generation](https://github.com/veminovici/fraktaal/blob/mai
 
 ### 3.1 Leader in Unidirectional Ring
 Implements the [leader election](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/election/leaderUR.fs) algorithm in which we select a leader form a graph of processes.
+
+<br />
+
+### Thank you!
+
+> You can contact me at veminovici@hotmail.com. Code designed and written in Päädu, on the beautiful island of [**Saaremaa**](https://goo.gl/maps/DmB9ewY2R3sPGFnTA), Estonia.
