@@ -24,7 +24,7 @@ jobs:
       run: dotnet restore
     - name: Build using FAKE
       #run: dotnet fake build
-      run: bc.cmd
+      run: ./bc.cmd
     # - name: Build
     #  run: dotnet build --configuration Release --no-restore
     # - name: Test
