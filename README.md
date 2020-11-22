@@ -3,7 +3,8 @@ A project for distributed algorithms.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sn12cou91meiu35e/branch/main?svg=true)](https://ci.appveyor.com/project/veminovici/fraktaal/branch/main) 
 [![Actions Status](https://github.com/veminovici/fraktaal/workflows/Build/badge.svg)](https://github.com/veminovici/csp-generator/actions)
-[![F# Language](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845f)](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845fc)
+[![F# Language](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845fc)](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845fc)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 <br />
 
 ## 1. Kernel
