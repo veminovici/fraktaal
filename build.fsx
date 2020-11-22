@@ -101,6 +101,7 @@ Target.create "All" ignore
 
 "Clean"
     ==> "Build"
+    ==> "Expecto"
     ==> "All"
 
 Target.runOrDefault "All"
