@@ -47,6 +47,7 @@ let configuration =
 
 // Trace.trace <| sprintf "Configuration=%O" configuration
 let bldWithConfiguration = DotNet.build (fun o -> { o with Configuration = configuration })
+let pckWithConfiguration = DotNet.pack  (fun o -> { o with Configuration = configuration })
 
 //
 // Code
@@ -100,33 +101,42 @@ Target.create "BT" ignore
 //
 
 Target.create "Clean" (fun _ ->
+
+    Trace.trace "Cleaning lib and tests bin/obj folders"
+
     !! "src/**/bin"
     ++ "src/**/obj"
     ++ "tests/**/bin"
     ++ "tests/**/obj"
-    |> Shell.cleanDirs 
-)
+    |> Shell.cleanDirs )
 
-Target.create "Build" (fun p ->
+Target.create "Build" (fun _ ->
 
-    Trace.trace <| sprintf " --- Building --- "
-    Trace.trace <| sprintf "args=%O" args
-    Trace.trace <| sprintf "params=%O" p.Context.Arguments
+    Trace.trace "Building lib and tests projects"
 
     !! "src/**/*.*proj"
     ++ "tests/**/*.*proj"
-    |> Seq.iter bldWithConfiguration
-)
+    |> Seq.iter bldWithConfiguration )
+
+Target.create "Pack" (fun _ ->
+
+    Trace.trace "Packing lib projects"
+
+    !! "src/**/*.*proj"
+    |> Seq.iter pckWithConfiguration )
 
 Target.create "Expecto" (fun _ ->
+    Trace.trace "Running Expecto tests"
+
     !! "tests/xpect/bin/Release/**/xpect.exe"
-    |> runExpecto id)
+    |> runExpecto id )
 
 Target.create "All" ignore
 
 "Clean"
     ==> "Build"
     ==> "Expecto"
+    ==> "Pack"
     ==> "All"
 
 Target.runOrDefaultWithArguments "All"

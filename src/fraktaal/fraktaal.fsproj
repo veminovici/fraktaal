@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <ProductName>Simplee Pods</ProductName>
+    <Title>Simplee Dune</Title>
     <PackageId>Simplee.Dune</PackageId>
     <Authors>Vlad Eminovici and contributors</Authors>
     <Owners>Vlad Eminovici</Owners>
@@ -10,7 +12,7 @@
     <PackageTags>fsharp;distributed;algorithms;actors</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Description>Distributed algorithms for F#</Description>
-    <Version>0.0.1</Version>
+    <Version>0.0.1-alpha</Version>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
