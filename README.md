@@ -10,6 +10,11 @@ A project for distributed algorithms.
 [![Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=red)](https://github.com/sponsors/veminovici)
 <br />
 
+[![Appveyor History](https://buildstats.info/appveyor/chart/veminovici/fraktaal?branch=main)](https://ci.appveyor.com/project/veminovici/fraktaal)
+[![Github Actions](https://buildstats.info/github/chart/veminovici/fraktaal)](https://github.com/sponsors/veminovici)
+
+<br />
+
 ## 1. Kernel
 This is the implementation of the [kernel](https://github.com/veminovici/fraktaal/blob/main/src/fraktaal/core/kernel.fs) for the distributed systems. It defines all the interfaces and the kernel can spawn different processes. The implementation has a logger process which collects all the logs in the systems.
 
