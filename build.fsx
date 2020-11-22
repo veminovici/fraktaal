@@ -1,21 +1,20 @@
 #r "paket:
 nuget Fake.DotNet.Cli
 nuget Fake.Testing.Common
+nuget Fake.DotNet.Testing.Coverlet
 nuget Fake.DotNet.Testing.Expecto
 nuget Fake.IO.FileSystem
 nuget Fake.Core.Target //"
 
 #load ".fake/build.fsx/intellisense.fsx"
-#load "./expecto.fsx"
-
 
 open Fake.Core
 open Fake.DotNet
+open Fake.DotNet.Testing
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
-open Expecto
 open System
 
 let codeBinObjDirs = !! "src/**/bin" ++ "src/**/obj"
@@ -89,7 +88,7 @@ Target.create "Tests Expecto" (fun _ ->
     Trace.trace " --- Running Tests --- "
 
     expectoBins
-    |> runExpecto id )
+    |> Expecto.run id )
 
 
 Target.create "BT" ignore
@@ -129,7 +128,7 @@ Target.create "Expecto" (fun _ ->
     Trace.trace "Running Expecto tests"
 
     !! "tests/xpect/bin/Release/**/xpect.exe"
-    |> runExpecto id )
+    |> Expecto.run id )
 
 Target.create "All" ignore
 
