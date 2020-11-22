@@ -1,1 +1,1 @@
-dotnet fake run build.fsx -t BT
+dotnet fake run build.fsx -t BT %*

@@ -26,7 +26,27 @@ let testProjects   = !! "tests/**/*.*proj"
 
 let expectoBins    = !! "tests/xpect/bin/Release/**/xpect.exe"
 
-Target.initEnvironment ()
+//Target.initEnvironment ()
+
+let args = Target.getArguments()
+let configuration = 
+    match args with
+    | Some args ->
+        args
+        |> Array.contains "-Release"
+        |> function
+        | true  -> DotNet.BuildConfiguration.Release
+        | false -> 
+            args
+            |> Array.contains "-Debug"
+            |> function
+            | true  -> DotNet.BuildConfiguration.Debug
+            | false -> DotNet.BuildConfiguration.Release
+    | None ->
+        DotNet.BuildConfiguration.Release
+
+// Trace.trace <| sprintf "Configuration=%O" configuration
+let bldWithConfiguration = DotNet.build (fun o -> { o with Configuration = configuration })
 
 //
 // Code
@@ -42,7 +62,7 @@ Target.create "Build Code" (fun _ ->
     Trace.trace " --- Building Code Projects --- "
 
     codeProjects
-    |> Seq.iter (DotNet.build id) )
+    |> Seq.iter bldWithConfiguration )
 
 Target.create "BC" ignore
 
@@ -62,7 +82,7 @@ Target.create "Build Tests" (fun _ ->
     Trace.trace " --- Building Tests Projects --- "
 
     testProjects
-    |> Seq.iter (DotNet.build id) )
+    |> Seq.iter bldWithConfiguration )
 
 Target.create "Tests Expecto" (fun _ ->
     Trace.trace " --- Running Tests --- "
@@ -87,10 +107,15 @@ Target.create "Clean" (fun _ ->
     |> Shell.cleanDirs 
 )
 
-Target.create "Build" (fun _ ->
+Target.create "Build" (fun p ->
+
+    Trace.trace <| sprintf " --- Building --- "
+    Trace.trace <| sprintf "args=%O" args
+    Trace.trace <| sprintf "params=%O" p.Context.Arguments
+
     !! "src/**/*.*proj"
     ++ "tests/**/*.*proj"
-    |> Seq.iter (DotNet.build id)
+    |> Seq.iter bldWithConfiguration
 )
 
 Target.create "Expecto" (fun _ ->
@@ -104,4 +129,4 @@ Target.create "All" ignore
     ==> "Expecto"
     ==> "All"
 
-Target.runOrDefault "All"
+Target.runOrDefaultWithArguments "All"

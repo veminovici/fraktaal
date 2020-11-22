@@ -1,1 +1,1 @@
-dotnet fake run build.fsx -t BC
+dotnet fake run build.fsx -t BC %*

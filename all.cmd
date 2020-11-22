@@ -1,1 +1,1 @@
-dotnet fake build
+dotnet fake build %*
