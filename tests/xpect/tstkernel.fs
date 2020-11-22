@@ -65,7 +65,18 @@ module Kernel =
 
     [<Tests>]
     let tests = 
-        testList "graph" [
+        testList "kernel" [
+            testCase "Unifirectional link" <| fun _ ->
+                let lnk = pid0 =>> pid1
+
+                match lnk with
+                | OneWay _ ->
+                    Expect.isTrue true "The link must be unidirectional"
+                | _        ->
+                    Expect.isTrue false "The link must be unidirectional"
+                
+                ()
+
             testCase "Process is correct" <| fun _ ->
 
                 let getState (pid, proc) = 

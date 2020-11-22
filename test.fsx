@@ -6,7 +6,9 @@ nuget Fake.IO.FileSystem
 nuget Fake.Core.Target //"
 
 #load ".fake/build.fsx/intellisense.fsx"
+#load "./expecto.fsx"
 
+open Expecto
 open Fake.Core
 open Fake.DotNet
 open Fake.IO
@@ -31,10 +33,15 @@ Target.create "Build" (fun _ ->
     |> Seq.iter (DotNet.build id)
 )
 
+Target.create "Expecto" (fun _ ->
+    !! "tests/xpect/bin/Release/**/xpect.exe"
+    |> runExpecto id)
+
 Target.create "All" ignore
 
 "Clean"
   ==> "Build"
+  ==> "Expecto"
   ==> "All"
 
 Target.runOrDefault "All"
