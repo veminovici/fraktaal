@@ -23,7 +23,8 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build using FAKE
-      run: dotnet fake build
+      #run: dotnet fake build
+      run: bc.cmd
     # - name: Build
     #  run: dotnet build --configuration Release --no-restore
     # - name: Test
