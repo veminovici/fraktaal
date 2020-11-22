@@ -6,6 +6,7 @@ A project for distributed algorithms.
 [![Release](https://img.shields.io/github/v/release/veminovici/fraktaal?include_prereleases)](https://github.com/veminovici/fraktaal/releases/tag/V0.1-alpha)
 [![F# Language](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845fc)](https://github.com/veminovici/fraktaal)
 [![GitHub repo size](https://img.shields.io/github/repo-size/veminovici/fraktaal)](https://github.com/veminovici/fraktaal)
+[![Nuget](https://buildstats.info/nuget/Fraktaal?includePreReleases=true)](https://www.nuget.org/packages/Fraktaal)
 [![License](https://img.shields.io/github/license/veminovici/fraktaal)](https://opensource.org/licenses/Apache-2.0)
 [![Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=red)](https://github.com/sponsors/veminovici)
 <br />
