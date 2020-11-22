@@ -3,6 +3,7 @@ A project for distributed algorithms.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sn12cou91meiu35e/branch/main?svg=true)](https://ci.appveyor.com/project/veminovici/fraktaal) 
 [![Actions Status](https://github.com/veminovici/fraktaal/workflows/Build/badge.svg)](https://github.com/veminovici/fraktaal/actions)
+[![Release](https://img.shields.io/github/v/release/veminovici/fraktaal?include_prereleases)](https://github.com/veminovici/fraktaal/releases/tag/V0.1-alpha)
 [![F# Language](https://img.shields.io/github/languages/top/veminovici/fraktaal?color=%23b845fc)](https://github.com/veminovici/fraktaal)
 [![GitHub repo size](https://img.shields.io/github/repo-size/veminovici/fraktaal)](https://github.com/veminovici/fraktaal)
 [![License](https://img.shields.io/github/license/veminovici/fraktaal)](https://opensource.org/licenses/Apache-2.0)
