@@ -14,12 +14,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="./core/kernel.list.fs" />
+    <Compile Include="./core/kernel.list.fs"  />
     <Compile Include="./core/kernel.async.fs" />
-    <Compile Include="./core/kernel.ids.fs" />
-    <Compile Include="./core/kernel.pld.fs" />
-    <Compile Include="./core/kernel.env.fs" />
-    <Compile Include="./core/kernel.lnk.fs" />
+    <Compile Include="./core/kernel.ids.fs"   />
+    <Compile Include="./core/kernel.pld.fs"   />
+    <Compile Include="./core/kernel.env.fs"   />
+    <Compile Include="./core/kernel.lnk.fs"   />
+    <Compile Include="./core/kernel.arg.fs"   />
+    <Compile Include="./core/kernel.pstt.fs"  />
+    <Compile Include="./core/kernel.ares.fs"  />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

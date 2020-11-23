@@ -610,6 +610,7 @@ module ProcessState =
 [<RequireQualifiedAccess>]
 module ApiResult = 
     let ofItem a = a |> box |> ApiResult
+    let toItem (ApiResult a) = unbox a
 
     let nil = ofItem ()
 
