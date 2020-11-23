@@ -272,6 +272,11 @@ module LinkData =
         W = NoWeight
         D = NoDirection }
 
+    let fid       (ldt: LinkData) = ldt.Fid
+    let tid       (ldt: LinkData) = ldt.Tid
+    let weight    (ldt: LinkData) = ldt.W
+    let direction (ldt: LinkData) = ldt.D
+
 [<RequireQualifiedAccess>]
 module Link =
     //
