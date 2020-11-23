@@ -19,11 +19,24 @@ jobs:
         dotnet-version: 5.0.100
         # dotnet-version: 3.1.301
     - name: Install tools
-      run: dotnet tool restore
+      run:  dotnet tool restore
     - name: Install dependencies
-      run: dotnet restore
+      run:  dotnet restore
     - name: Build using FAKE
-      run: dotnet fake build
+      run:  dotnet fake build
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token:     ${{ secrets.CODECOV_TOKEN }}
+        file:      ./.coverage/coverage.xml
+        # files:     ./.coverage/coverage1.xml,./.coverage/coverage2.xml
+        directory: ./.coverage/reports/
+        flags:     unittests
+        env_vars:  OS
+        name:      codecov-umbrella
+        fail_ci_if_error: true
+        path_to_write_report: ./.coverage/codecov_report.txt
+        verbose: true
       # run: dotnet fake run build.fsx -t BC
     # - name: Build
     #  run: dotnet build --configuration Release --no-restore
