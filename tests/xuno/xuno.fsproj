@@ -16,6 +16,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="./core/kernel.list.fs" />
+    <Compile Include="./core/kernel.async.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 namespace Testly.DSystems.Kernel
 
-module TstList = 
+module List = 
 
     open System
     open Xunit
