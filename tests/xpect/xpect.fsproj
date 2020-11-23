@@ -15,7 +15,7 @@
   <ItemGroup>
     <Compile Include="tstkernel.fs" />
     <Compile Include="tsttraversals.fs" />
-    <Compile Include="main.fs" />
+    <Compile Include="_main.fs" />
   </ItemGroup>
 
   <ItemGroup>
