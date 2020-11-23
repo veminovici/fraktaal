@@ -239,3 +239,129 @@ type LinkTests(output: ITestOutputHelper) =
         |> String.length
         |> (<>) 0
         |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor to string`` () =
+
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor to string with title`` () =
+
+        [
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        ]
+        |> Neighbor.toStringWithTtl "ttl" (ProcessId.ofStr "pid")
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor pid`` () =
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> Neighbor.pid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.pid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.pid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor fid`` () =
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> Neighbor.fid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.fid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.fid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor tid`` () =
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> Neighbor.tid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.tid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> Neighbor.tid
+        |> sprintf "%O"
+        |> (=) "pid"
+        |> Assert.True
+
+    [<Fact>]
+    let ``Neighbor can send to`` () =
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> function
+        | Neighbor.CanSendTo _ -> Assert.True false
+        | _                    -> Assert.True true
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> function
+        | Neighbor.CanSendTo _ -> Assert.True true
+        | _                    -> Assert.True false
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> function
+        | Neighbor.CanSendTo _ -> Assert.True true
+        | _                    -> Assert.True false
+
+    [<Fact>]
+    let ``Neighbor can receive from`` () =
+        Sourcer (ProcessId.ofStr "pid", NoWeight, NoDirection)
+        |> function
+        | Neighbor.CanReceiveFrom _ -> Assert.True true
+        | _                         -> Assert.True false
+
+        Receiver(ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> function
+        | Neighbor.CanReceiveFrom _ -> Assert.True false
+        | _                         -> Assert.True true
+
+        SourcerOrReceiver (ProcessId.ofStr "pid", Weight 1.0, ToLeftDirection)
+        |> function
+        | Neighbor.CanReceiveFrom _ -> Assert.True true
+        | _                         -> Assert.True false
