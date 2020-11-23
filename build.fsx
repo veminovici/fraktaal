@@ -27,6 +27,12 @@ let testProjects   = !! "tests/**/*.*proj"
 
 let expectoBins    = !! "tests/xpect/bin/Release/**/xpect.exe"
 
+let traceTitle ttl = 
+    Trace.trace ""
+    Trace.trace <| sprintf " --- %s --- " ttl
+    Trace.trace ""
+
+
 //Target.initEnvironment ()
 
 let args = Target.getArguments()
@@ -53,19 +59,26 @@ Trace.trace <| ""
 
 let bldWithConfiguration = DotNet.build (fun o -> { o with Configuration = configuration })
 let pckWithConfiguration = DotNet.pack  (fun o -> { o with Configuration = configuration })
+let tstWithConfiguration = DotNet.test  (fun o -> 
+        { o with Configuration = configuration }
+        |> Coverlet.withDotNetTestOptions (fun p -> 
+            { p with
+                OutputFormat = Coverlet.OutputFormat.OpenCover
+                Output = "../../.coverage/coverage.xml"
+                UseSourceLink = true} ))
 
 //
 // Code
 //
 
 Target.create "Lib.Clean" (fun _ ->
-    Trace.trace " --- Cleaning Code Bin & Obj Folders --- "
+    traceTitle "Cleaning Code Bin & Obj Folders"
 
     codeBinObjDirs
     |> Shell.cleanDirs )
 
 Target.create "Lib.Build" (fun _ ->
-    Trace.trace " --- Building Code Projects --- "
+    traceTitle "Building Code Projects"
 
     codeProjects
     |> Seq.iter bldWithConfiguration )
@@ -77,37 +90,26 @@ Target.create "BC" ignore
 //
 
 Target.create "Tst.Clean" (fun _ ->
-    Trace.trace " --- Cleaning Tests Bin & Obj Folders --- "
+    traceTitle "Cleaning Tests Bin & Obj Folders"
 
     testBinObjDirs
     |> Shell.cleanDirs )
 
 Target.create "Tst.Build" (fun _ ->
-    Trace.trace " --- Building Tests Projects --- "
+    traceTitle "Building Tests Projects"
 
     testProjects
     |> Seq.iter bldWithConfiguration )
 
 Target.create "Tst.Expecto" (fun _ ->
-    Trace.trace " --- Running Tests --- "
+    traceTitle "Running Expecto Tests"
 
     expectoBins
     |> Expecto.run id )
 
 Target.create "Tst.Coverage" (fun _ ->
-    Trace.trace " --- Code Coverage --- "
-    
-    DotNet.test (fun p -> 
-        p
-        |> Coverlet.withDotNetTestOptions (fun p -> 
-            { p with
-                OutputFormat = Coverlet.OutputFormat.OpenCover
-                Output = "../../.coverage/coverage.xml"
-                UseSourceLink = true} )) "."
-
-    let p = System.IO.Path.Combine [|root; ".coverage/coverage.xml"|]
-    let f = System.IO.File.Exists p
-    Trace.trace <| sprintf "Code coverage file exists: %b" f )
+    traceTitle "Running Tests & Code Coverage"
+    tstWithConfiguration "." )
 
 Target.create "BT" ignore
 
@@ -116,8 +118,7 @@ Target.create "BT" ignore
 //
 
 Target.create "Rel.Pack" (fun _ ->
-
-    Trace.trace "Packing lib projects"
+    traceTitle "Packing lib projects"
 
     !! "src/**/*.*proj"
     |> Seq.iter pckWithConfiguration )
@@ -129,7 +130,7 @@ Target.create "Release" ignore
 ==> "BC"
 ==> "Tst.Clean" 
 ==> "Tst.Build" 
-==> "Tst.Expecto"
+//==> "Tst.Expecto"
 ==> "Tst.Coverage"
 ==> "BT"
 ==> "Rel.Pack"
