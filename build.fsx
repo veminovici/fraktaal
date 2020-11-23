@@ -17,6 +17,8 @@ open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
 open System
 
+let root = __SOURCE_DIRECTORY__
+
 let codeBinObjDirs = !! "src/**/bin" ++ "src/**/obj"
 let codeProjects   = !! "src/**/*.*proj"
 
@@ -92,6 +94,17 @@ Target.create "Tst.Expecto" (fun _ ->
     expectoBins
     |> Expecto.run id )
 
+Target.create "Tst.Coverage" (fun _ ->
+    Trace.trace " --- Code Coverage --- "
+    
+    DotNet.test (fun p -> 
+        p
+        |> Coverlet.withDotNetTestOptions (fun p -> 
+            { p with
+                OutputFormat = Coverlet.OutputFormat.OpenCover
+                Output = ".cover\cover.xml"
+                UseSourceLink = true} )) "." )
+
 Target.create "BT" ignore
 
 //
@@ -112,7 +125,8 @@ Target.create "Release" ignore
 ==> "BC"
 ==> "Tst.Clean" 
 ==> "Tst.Build" 
-==> "Tst.Expecto" 
+==> "Tst.Expecto"
+==> "Tst.Coverage"
 ==> "BT"
 ==> "Rel.Pack"
 ==> "Release"

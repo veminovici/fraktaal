@@ -2,6 +2,7 @@ src/**/obj
 src/**/bin
 tests/**/bin
 tests/**/obj
+tests/**/.cover
 .fake
 .paket
 .ionide
