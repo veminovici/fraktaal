@@ -162,7 +162,7 @@ type LinkTests(output: ITestOutputHelper) =
         |> snd
         |> function
         | Neighbor.SrcRcvNeighbor (p, w, d) -> 
-            p |> (=) pid1 |> Assert.True
+            p |> (=) pid1        |> Assert.True
             d |> (=) NoDirection |> Assert.True
             w |> (=) NoWeight    |> Assert.True
         | _ -> 
@@ -178,7 +178,7 @@ type LinkTests(output: ITestOutputHelper) =
         |> snd
         |> function
         | Neighbor.SrcRcvNeighbor (p, w , d) ->
-            p |> (=) pid0 |> Assert.True
+            p |> (=) pid0        |> Assert.True
             d |> (=) NoDirection |> Assert.True
             w |> (=) NoWeight    |> Assert.True
         | _ -> 
@@ -198,11 +198,12 @@ type LinkTests(output: ITestOutputHelper) =
         |> (=) pid0 
         |> Assert.True
 
+
         s 
         |> snd
         |> function
-        | Neighbor.SrcNeighbor (p, w, d) -> 
-            p |> (=) pid1 |> Assert.True
+        | Neighbor.RcvNeighbor (p, w, d) -> 
+            p |> (=) pid1        |> Assert.True
             d |> (=) NoDirection |> Assert.True
             w |> (=) NoWeight    |> Assert.True
         | _ -> 
@@ -217,8 +218,8 @@ type LinkTests(output: ITestOutputHelper) =
         e
         |> snd
         |> function
-        | Neighbor.RcvNeighbor (p, w , d) ->
-            p |> (=) pid0 |> Assert.True
+        | Neighbor.SrcNeighbor (p, w , d) ->
+            p |> (=) pid0        |> Assert.True
             d |> (=) NoDirection |> Assert.True
             w |> (=) NoWeight    |> Assert.True
         | _ -> 
