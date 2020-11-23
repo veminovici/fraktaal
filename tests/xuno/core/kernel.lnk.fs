@@ -73,7 +73,6 @@ type LinkTests(output: ITestOutputHelper) =
             ldt |> LinkData.direction |> (=) ToLeftDirection |> Assert.True
         | TwoWays _ -> Assert.True false
 
-
     [<Fact>]
     let ``Unidirectional link with weight`` () =
 
@@ -144,3 +143,43 @@ type LinkTests(output: ITestOutputHelper) =
             ldt |> LinkData.tid       |> (=) pid1            |> Assert.True
             ldt |> LinkData.weight    |> (=) NoWeight        |> Assert.True
             ldt |> LinkData.direction |> (=) ToLeftDirection |> Assert.True
+
+    [<Fact>]
+    let ``Neighbors from bidirectional link`` () =
+
+        let pid0 = ProcessId.ofStr "p0"
+        let pid1 = ProcessId.ofStr "p1"
+
+        let s, e = pid0 <=> pid1 |> Neighbor.endsOfLink
+
+        s 
+        |> fst 
+        |> FromId.toProcessId 
+        |> (=) pid0 
+        |> Assert.True
+
+        s 
+        |> snd
+        |> function
+        | Neighbor.SrcRcvNeighbor (p, w, d) -> 
+            p |> (=) pid1 |> Assert.True
+            d |> (=) NoDirection |> Assert.True
+            w |> (=) NoWeight    |> Assert.True
+        | _ -> 
+            Assert.True false
+
+        e 
+        |> fst 
+        |> ToId.toProcessId
+        |> (=) pid1
+        |> Assert.True
+
+        e
+        |> snd
+        |> function
+        | Neighbor.SrcRcvNeighbor (p, w , d) ->
+            p |> (=) pid0 |> Assert.True
+            d |> (=) NoDirection |> Assert.True
+            w |> (=) NoWeight    |> Assert.True
+        | _ -> 
+            Assert.True false

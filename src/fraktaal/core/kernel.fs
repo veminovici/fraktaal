@@ -381,6 +381,18 @@ module Neighbor =
     let canSendTo      = function CanSendTo _      -> true | _ -> false
     let canReceiveFrom = function CanReceiveFrom _ -> true | _ -> false
 
+    let (|SrcRcvNeighbor|_|) = function
+        | SourcerOrReceiver (p, w, d) -> Some (p, w, d)
+        | _                           -> None
+
+    let (|SrcNeighbor|_|) = function
+        | Sourcer (p, w, d) -> Some (p, w, d)
+        | _                 -> None
+
+    let (|RcvNeighbor|_|) = function
+        | Receiver (p, w, d) -> Some (p, w, d)
+        | _                  -> None
+
 //
 // API arguments
 //
