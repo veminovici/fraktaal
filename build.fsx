@@ -102,8 +102,12 @@ Target.create "Tst.Coverage" (fun _ ->
         |> Coverlet.withDotNetTestOptions (fun p -> 
             { p with
                 OutputFormat = Coverlet.OutputFormat.OpenCover
-                Output = "..\..\.coverage\coverage.xml"
-                UseSourceLink = true} )) "." )
+                Output = "../../.coverage/coverage.xml"
+                UseSourceLink = true} )) "."
+
+    let p = System.IO.Path.Combine [|root; ".coverage/coverage.xml"|]
+    let f = System.IO.File.Exists p
+    Trace.trace <| sprintf "Code coverage file exists: %b" f )
 
 Target.create "BT" ignore
 

@@ -32,9 +32,9 @@ jobs:
         # files:     ./.coverage/coverage1.xml,./.coverage/coverage2.xml
         directory: ./.coverage/reports/
         flags:     unittests
-        env_vars:  OS
+        # env_vars:  OS
         name:      codecov-umbrella
-        fail_ci_if_error: true
+        # fail_ci_if_error: true
         path_to_write_report: ./.coverage/codecov_report.txt
         verbose: true
       # run: dotnet fake run build.fsx -t BC
