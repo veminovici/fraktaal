@@ -44,7 +44,11 @@ let configuration =
     | None ->
         DotNet.BuildConfiguration.Release
 
-// Trace.trace <| sprintf "Configuration=%O" configuration
+Trace.trace <| ""
+Trace.trace <| "<<< Simplee.Fraktal Project >>>"
+Trace.trace <| sprintf "Configuration=%O" configuration
+Trace.trace <| ""
+
 let bldWithConfiguration = DotNet.build (fun o -> { o with Configuration = configuration })
 let pckWithConfiguration = DotNet.pack  (fun o -> { o with Configuration = configuration })
 
@@ -52,13 +56,13 @@ let pckWithConfiguration = DotNet.pack  (fun o -> { o with Configuration = confi
 // Code
 //
 
-Target.create "Clean Code" (fun _ ->
+Target.create "Lib.Clean" (fun _ ->
     Trace.trace " --- Cleaning Code Bin & Obj Folders --- "
 
     codeBinObjDirs
     |> Shell.cleanDirs )
 
-Target.create "Build Code" (fun _ ->
+Target.create "Lib.Build" (fun _ ->
     Trace.trace " --- Building Code Projects --- "
 
     codeProjects
@@ -66,76 +70,51 @@ Target.create "Build Code" (fun _ ->
 
 Target.create "BC" ignore
 
-"Clean Code" ==> "Build Code" ==> "BC"
-
 //
 // Tests only
 //
 
-Target.create "Clean Tests" (fun _ ->
+Target.create "Tst.Clean" (fun _ ->
     Trace.trace " --- Cleaning Tests Bin & Obj Folders --- "
 
     testBinObjDirs
     |> Shell.cleanDirs )
 
-Target.create "Build Tests" (fun _ ->
+Target.create "Tst.Build" (fun _ ->
     Trace.trace " --- Building Tests Projects --- "
 
     testProjects
     |> Seq.iter bldWithConfiguration )
 
-Target.create "Tests Expecto" (fun _ ->
+Target.create "Tst.Expecto" (fun _ ->
     Trace.trace " --- Running Tests --- "
 
     expectoBins
     |> Expecto.run id )
 
-
 Target.create "BT" ignore
 
-"Clean Tests" ==> "Build Tests" ==> "Tests Expecto" ==> "BT"
-
 //
-// All
+// Release
 //
 
-Target.create "Clean" (fun _ ->
-
-    Trace.trace "Cleaning lib and tests bin/obj folders"
-
-    !! "src/**/bin"
-    ++ "src/**/obj"
-    ++ "tests/**/bin"
-    ++ "tests/**/obj"
-    |> Shell.cleanDirs )
-
-Target.create "Build" (fun _ ->
-
-    Trace.trace "Building lib and tests projects"
-
-    !! "src/**/*.*proj"
-    ++ "tests/**/*.*proj"
-    |> Seq.iter bldWithConfiguration )
-
-Target.create "Pack" (fun _ ->
+Target.create "Rel.Pack" (fun _ ->
 
     Trace.trace "Packing lib projects"
 
     !! "src/**/*.*proj"
     |> Seq.iter pckWithConfiguration )
 
-Target.create "Expecto" (fun _ ->
-    Trace.trace "Running Expecto tests"
+Target.create "Release" ignore
 
-    !! "tests/xpect/bin/Release/**/xpect.exe"
-    |> Expecto.run id )
+"Lib.Clean"
+==> "Lib.Build" 
+==> "BC"
+==> "Tst.Clean" 
+==> "Tst.Build" 
+==> "Tst.Expecto" 
+==> "BT"
+==> "Rel.Pack"
+==> "Release"
 
-Target.create "All" ignore
-
-"Clean"
-    ==> "Build"
-    ==> "Expecto"
-    ==> "Pack"
-    ==> "All"
-
-Target.runOrDefaultWithArguments "All"
+Target.runOrDefaultWithArguments "Release"
