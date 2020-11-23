@@ -9,6 +9,7 @@ A project for distributed algorithms.
 [![Nuget](https://buildstats.info/nuget/Fraktaal?includePreReleases=true)](https://www.nuget.org/packages/Fraktaal)
 [![License](https://img.shields.io/github/license/veminovici/fraktaal)](https://opensource.org/licenses/Apache-2.0)
 [![Sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=red)](https://github.com/sponsors/veminovici)
+[![codecov](https://codecov.io/gh/veminovici/fraktaal/branch/main/graph/badge.svg?token=Y9QA3CI3AO)](https://codecov.io/gh/veminovici/fraktaal)
 <br />
 
 [![Appveyor History](https://buildstats.info/appveyor/chart/veminovici/fraktaal?branch=main)](https://ci.appveyor.com/project/veminovici/fraktaal)

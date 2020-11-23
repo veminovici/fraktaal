@@ -102,7 +102,7 @@ Target.create "Tst.Coverage" (fun _ ->
         |> Coverlet.withDotNetTestOptions (fun p -> 
             { p with
                 OutputFormat = Coverlet.OutputFormat.OpenCover
-                Output = ".cover\cover.xml"
+                Output = "..\..\.coverage\coverage.xml"
                 UseSourceLink = true} )) "." )
 
 Target.create "BT" ignore

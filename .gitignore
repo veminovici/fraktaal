@@ -3,7 +3,9 @@ src/**/bin
 tests/**/bin
 tests/**/obj
 tests/**/.cover
+
+.coverage
+.ionide
 .fake
 .paket
-.ionide
 .vs
