@@ -18,6 +18,7 @@
     <Compile Include="./core/kernel.list.fs" />
     <Compile Include="./core/kernel.async.fs" />
     <Compile Include="./core/kernel.ids.fs" />
+    <Compile Include="./core/kernel.pld.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
