@@ -224,3 +224,18 @@ type LinkTests(output: ITestOutputHelper) =
             w |> (=) NoWeight    |> Assert.True
         | _ -> 
             Assert.True false
+
+    [<Fact>]
+    let ``Weight to string`` () =
+        NoWeight
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+        1.0
+        |> Weight
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True

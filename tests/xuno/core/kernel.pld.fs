@@ -26,6 +26,23 @@ type PayloadTests(output: ITestOutputHelper) =
         | _          ->
             Assert.True false
 
+    let ``Payload to string`` () =
+
+        let xs = [|0uy; 1uy|]
+
+        xs 
+        |> Payload.ofBytes
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
+        PingPayload
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
+
     [<Fact>]
     let ``Empty Payload`` () =
 

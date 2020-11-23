@@ -21,10 +21,23 @@ type EnvelopeTests(output: ITestOutputHelper) =
             |> Envelope.withFid (FromId.ofStr "fid")
             |> Envelope.withTid (ToId.ofStr "tid")
 
-        Assert.True (Envelope.eid env <> EnvelopeId.empty)
-        Assert.True (env |> Envelope.sid |> SessionId.sid |> (=) "sid")
-        Assert.True (env |> Envelope.fid |> FromId.fid |> (=) "fid")
-        Assert.True (env |> Envelope.tid |> ToId.tid |> (=) "tid")
+        env |> Envelope.eid |> (<>) EnvelopeId.empty      |> Assert.True
+        env |> Envelope.sid |> SessionId.sid |> (=) "sid" |> Assert.True
+        env |> Envelope.fid |> FromId.fid    |> (=) "fid" |> Assert.True
+        env |> Envelope.tid |> ToId.tid      |> (=) "tid" |> Assert.True
+
+    [<Fact>]
+    let ``Envelope to string`` () =
+
+        ()
+        |> Envelope.ofRndEid
+        |> Envelope.withSid (SessionId.ofStr "sid")
+        |> Envelope.withFid (FromId.ofStr "fid")
+        |> Envelope.withTid (ToId.ofStr "tid")
+        |> sprintf "%O"
+        |> String.length
+        |> (<>) 0
+        |> Assert.True
 
     [<Fact>]
     let ``Envelope fields`` () =
@@ -35,8 +48,9 @@ type EnvelopeTests(output: ITestOutputHelper) =
             |> Envelope.withSid (SessionId.ofStr "sid")
             |> Envelope.withFid (FromId.ofStr "fid")
             |> Envelope.withTid (ToId.ofStr "tid")
+            |> Envelope.withPld (Payload.ofBytes [||])
 
-        Assert.True (Envelope.eid env <> EnvelopeId.empty)
-        Assert.True (env |> Envelope.sid |> SessionId.sid |> (=) "sid")
-        Assert.True (env |> Envelope.fid |> FromId.fid |> (=) "fid")
-        Assert.True (env |> Envelope.tid |> ToId.tid |> (=) "tid")
+        env |> Envelope.eid |> (<>) EnvelopeId.empty      |> Assert.True
+        env |> Envelope.sid |> SessionId.sid |> (=) "sid" |> Assert.True
+        env |> Envelope.fid |> FromId.fid    |> (=) "fid" |> Assert.True
+        env |> Envelope.tid |> ToId.tid      |> (=) "tid" |> Assert.True
