@@ -24,6 +24,7 @@
     <Compile Include="./core/kernel.pstt.fs"  />
     <Compile Include="./core/kernel.ares.fs"  />
     <Compile Include="./core/kernel.lgr.fs"   />
+    <Compile Include="./core/kernel.psetup.fs"   />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

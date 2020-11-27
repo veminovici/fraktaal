@@ -107,7 +107,6 @@ type LinkTests(output: ITestOutputHelper) =
             ldt |> LinkData.direction |> (=) ToRightDirection |> Assert.True
         | TwoWays _ -> Assert.True false
 
-
     [<Fact>]
     let ``Bidirectional link with weight`` () =
 
