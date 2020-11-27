@@ -76,28 +76,65 @@ type ProcSetupTests(output: ITestOutputHelper) =
             |> TstKernel.stt
             |> Async.map (fun stt -> pid, stt)
 
+        let ns (p: TstKernelStt) = p.Ns
+
         let checkP0 res = 
-            let p0s = res |> Array.where (fun (pid, proc) -> pid = pid0) |> Array.map snd
+            let p0s = res |> Array.where (fun (pid, _) -> pid = pid0) |> Array.map snd
 
             p0s
             |> Array.length
             |> (=) 1
             |> Assert.True
 
-            let proc0 = Array.head p0s
+            let proc = Array.head p0s
 
-            p0s
-            |> Array.head
+            proc
             |> (fun p -> p.Pid)
             |> (=) pid0
             |> Assert.True
 
-            p0s
-            |> Array.head
-            |> fun p -> p.Ns
+            proc
+            |> ns
             |> List.length
             |> (=) 2
             |> Assert.True
+
+            proc
+            |> ns
+            |> List.where (fun n -> n |> Neighbor.pid |> (=) pid1)
+            |> List.head
+            |> function
+            | Neighbor.CanSendTo _ -> true
+            | _                    -> false
+            |> Assert.True
+
+            res
+
+        let checkP1 res = 
+            let p1s = res |> Array.where (fun (pid, _) -> pid = pid1) |> Array.map snd
+            let proc = Array.head p1s
+
+            proc
+            |> (fun p -> p.Pid)
+            |> (=) pid1
+            |> Assert.True
+
+            proc
+            |> ns
+            |> List.length
+            |> (=) 1
+            |> Assert.True
+
+            proc
+            |> ns
+            |> List.where (fun n -> n |> Neighbor.pid |> (=) pid0)
+            |> List.head
+            |> function
+            | Neighbor.CanSendTo _ -> true
+            | _                    -> false
+            |> Assert.True
+
+            res
 
         let flow = kernel {
             // create the processes
@@ -122,4 +159,88 @@ type ProcSetupTests(output: ITestOutputHelper) =
         flow
         |> runSync
         |> checkP0
+        |> checkP1
+        |> ignore
+
+    [<Fact>]
+    let ``Create process and left and right`` () =
+
+        let pid0 = ProcessId.ofStr "p0"
+        let pid1 = ProcessId.ofStr "p1"
+        let pid2 = ProcessId.ofStr "p2"
+
+        let getState (pid, proc) = 
+            proc
+            |> TstKernel.stt
+            |> Async.map (fun stt -> pid, stt)
+
+        let ns (p: TstKernelStt) = p.Ns
+
+        let proc p =
+            Array.where (fun (pid, _) -> pid = p) 
+            >> Array.map snd 
+            >> Array.head
+
+        let checkP p (pr, pl) res = 
+            let proc = proc p res
+
+            proc
+            |> ns
+            |> List.length
+            |> (=) 2
+            |> Assert.True
+
+            proc
+            |> ns
+            |> List.where (fun n -> n |> Neighbor.pid |> (=) pr)
+            |> List.head
+            |> function
+            | Neighbor.CanSendTo (_, _, d) when d = ToRightDirection -> true
+            | _                                                      -> false
+            |> Assert.True
+
+            proc
+            |> ns
+            |> List.where (fun n -> n |> Neighbor.pid |> (=) pl)
+            |> List.head
+            |> function
+            | Neighbor.CanSendTo (_, _, d) when d = ToLeftDirection -> true
+            | _                                                     -> false
+            |> Assert.True
+
+            res
+
+        let checkP0 = checkP pid0 (pid1, pid2)  
+        let checkP1 = checkP pid1 (pid2, pid0) 
+        let checkP2 = checkP pid2 (pid0, pid1)
+
+        let flow = kernel {
+            // create the processes
+            let! procs = 
+                [ pid0; pid1; pid2 ] 
+                |> TstKernel.spawns
+                |> KFlow.map Map.ofList
+
+            // create the connections
+            do! [
+                (pid0 <=> pid1) ++> ToRightDirection
+                (pid1 <=> pid2) ++> ToRightDirection
+                (pid2 <=> pid0) ++> ToRightDirection] 
+                |> addLinks
+
+            do! sleep 100
+
+            // get states of the processes
+            return
+                procs 
+                |> Map.toList 
+                |> List.map getState
+                |> Async.Parallel
+                |> Async.RunSynchronously }
+        
+        flow
+        |> runSync
+        |> checkP0
+        |> checkP1
+        |> checkP2
         |> ignore

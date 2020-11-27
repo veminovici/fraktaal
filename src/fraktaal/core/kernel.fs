@@ -325,7 +325,7 @@ module Link =
         let (<<=) x y = unilink y x
         let (<<.) x y = unilink y x |> withDirection ToLeftDirection
         let (++)  l w = withWeight (Weight w) l
-        let (!!)  l d = withDirection d l
+        let (++>) l d = withDirection d l
 
 type Neighbor =
     | Sourcer           of ProcessId * Weight * Direction
